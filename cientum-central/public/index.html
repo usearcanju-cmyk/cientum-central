@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Central do pedido — Cientum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme:#F3F1ED;
+    --papel:#FFFFFF;
+    --tinta:#1C1C1C;
+    --tinta-suave:#66625C;
+    --linha:#E2DED7;
+    --ouro:#A07A45;
+    --ouro-claro:#EFEAE2;
+    --botao:#111111;
+    --barra:#2B2B2B;
+    --roxo:#454A78;
+    --verde:#3E5C50;
+    --vermelho:#7A2A26;
+    --raio:14px;
+    --raio-p:9px;
+    --display:'Cormorant Garamond',Georgia,serif;
+    --corpo:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--creme);color:var(--tinta);
+    font-family:var(--corpo);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--ouro);outline-offset:3px;border-radius:4px}
+
+  .envelope{max-width:620px;margin:0 auto;padding:26px 20px 60px}
+
+  /* ---------- Cabeçalho da marca ---------- */
+  .topbar{
+    background:var(--barra);display:flex;align-items:center;
+    justify-content:center;padding:15px 20px
+  }
+  .topbar img{height:30px;width:auto;display:block}
+
+  .faixa{
+    background:var(--ouro-claro);border-bottom:1px solid var(--linha);
+    overflow:hidden;padding:10px 0
+  }
+  .faixa__trilho{display:flex;width:max-content;animation:desliza 26s linear infinite}
+  .faixa__trilho span{
+    padding:0 24px;white-space:nowrap;font-family:var(--corpo);font-size:11px;
+    font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--barra)
+  }
+  @keyframes desliza{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* Dentro da loja (iframe) a Nuvemshop já mostra o cabeçalho dela.
+     Escondemos o nosso para não ficarem dois empilhados. */
+  .embutido .topbar,
+  .embutido .faixa{display:none}
+  .embutido body{background:transparent}
+  .embutido .envelope{padding-top:16px}
+
+  /* ---------- Aviso fixo ---------- */
+  .aviso-fixo{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--papel);border:1px solid var(--linha);border-left:3px solid var(--ouro);
+    border-radius:var(--raio-p);padding:13px 15px;margin-bottom:24px;
+    font-size:13.5px;line-height:1.5;color:var(--tinta-suave)
+  }
+  .aviso-fixo svg{
+    flex:0 0 auto;width:19px;height:19px;margin-top:2px;
+    stroke:var(--ouro);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round
+  }
+  .aviso-fixo strong{color:var(--tinta);font-weight:600}
+
+  /* ---------- Cabeçalho ---------- */
+  .topo{text-align:center;margin-bottom:26px}
+  .topo h1{font-family:var(--display);font-size:38px;font-weight:500;line-height:1.08;margin:0}
+  .topo p{margin:12px auto 0;max-width:34ch;color:var(--tinta-suave);font-size:14.5px}
+
+  /* ---------- Atalhos ---------- */
+  .atalhos{display:grid;gap:11px;margin-bottom:34px}
+  .atalho{
+    display:flex;align-items:center;gap:15px;width:100%;text-align:left;cursor:pointer;
+    padding:15px 17px;background:var(--papel);border:1px solid var(--linha);
+    border-radius:var(--raio);font-family:var(--corpo);color:var(--tinta);
+    transition:border-color .18s ease,box-shadow .18s ease
+  }
+  .atalho:hover{border-color:var(--ouro);box-shadow:0 2px 10px rgba(28,28,28,.06)}
+  .atalho__icone{
+    flex:0 0 auto;width:46px;height:46px;border-radius:50%;
+    background:var(--ouro-claro);display:grid;place-items:center
+  }
+  .atalho__icone svg{width:22px;height:22px;stroke:var(--ouro);fill:none;stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round}
+  .atalho__texto{flex:1;font-family:var(--display);font-size:21px;font-weight:500;line-height:1.2}
+  .atalho__seta{flex:0 0 auto;color:var(--ouro);font-size:19px;line-height:1}
+  .atalho--marcado{border-color:var(--ouro);background:#fff}
+
+  /* ---------- Divisória ---------- */
+  .divisoria{display:flex;align-items:center;gap:14px;margin-bottom:20px;color:var(--ouro)}
+  .divisoria::before,.divisoria::after{content:'';flex:1;height:1px;background:var(--linha)}
+  .divisoria svg{width:15px;height:15px;fill:currentColor}
+
+  /* ---------- Blocos ---------- */
+  .cartao{
+    background:var(--papel);border:1px solid var(--linha);
+    border-radius:var(--raio);padding:20px;margin-bottom:13px
+  }
+  .cartao--busca{text-align:center;padding:24px 20px}
+  .cartao--busca h2{font-family:var(--display);font-size:26px;font-weight:500;margin:0 0 4px}
+  .cartao--busca p{margin:0 0 18px;color:var(--tinta-suave);font-size:13.5px}
+
+  .rotulo{
+    display:block;font-size:11px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--tinta-suave);margin-bottom:7px
+  }
+  .campo{margin-bottom:11px;text-align:left}
+  .dica{
+    margin:6px 2px 0;font-size:11.5px;line-height:1.5;
+    color:var(--tinta-suave);text-align:left
+  }
+  .dica b{color:var(--tinta);font-weight:600}
+  input,select,textarea{
+    width:100%;padding:12px 14px;font-family:var(--corpo);font-size:16px;
+    color:var(--tinta);background:#fff;border:1px solid var(--linha);
+    border-radius:var(--raio-p);appearance:none
+  }
+  input::placeholder,textarea::placeholder{color:#A29D95}
+  input:focus,select:focus,textarea:focus{border-color:var(--ouro);outline:none}
+  textarea{min-height:112px;resize:vertical;line-height:1.5}
+
+  .botao{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:14px 18px;margin-top:6px;
+    border:1px solid var(--botao);border-radius:var(--raio-p);
+    background:var(--botao);color:#FDFBF7;font-family:var(--corpo);
+    font-size:14.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;
+    transition:background .18s ease,color .18s ease
+  }
+  .botao:hover:not(:disabled){background:#000000}
+  .botao:disabled{opacity:.5;cursor:default}
+  .botao--vazado{background:transparent;color:var(--botao)}
+  .botao--vazado:hover:not(:disabled){background:var(--botao);color:#FDFBF7}
+  .botao--texto{
+    width:auto;padding:6px 0;margin:0;border:0;background:none;color:var(--ouro);
+    font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px
+  }
+  .botao--texto:hover:not(:disabled){background:none;color:var(--tinta)}
+
+  .aviso{
+    padding:11px 14px;border-radius:var(--raio-p);font-size:13.5px;
+    background:#F5E5E2;border:1px solid #E0C4BF;color:var(--vermelho);margin-bottom:13px
+  }
+
+  .selo{
+    display:flex;align-items:center;justify-content:center;gap:11px;
+    margin-top:22px;color:var(--tinta-suave);font-size:13px
+  }
+  .selo svg{width:19px;height:19px;stroke:var(--ouro);fill:none;stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round}
+  .selo span{padding-left:11px;border-left:1px solid var(--linha)}
+
+  /* ---------- Lista de pedidos ---------- */
+  .saudacao{font-family:var(--display);font-size:30px;font-weight:500;margin:0 0 3px;line-height:1.15}
+  .saudacao + p{margin:0 0 20px;color:var(--tinta-suave);font-size:14px}
+
+  .pedido{
+    position:relative;width:100%;text-align:left;cursor:pointer;overflow:hidden;
+    background:var(--papel);border:1px solid var(--linha);
+    border-radius:var(--raio);padding:17px 18px 17px 23px;margin-bottom:11px;
+    font-family:var(--corpo);color:inherit;
+    transition:border-color .18s ease,box-shadow .18s ease
+  }
+  .pedido::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cor,var(--linha))
+  }
+  .pedido:hover{border-color:var(--ouro);box-shadow:0 2px 10px rgba(28,28,28,.06)}
+  .pedido__linha{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .pedido__num{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--tinta-suave)}
+  .pedido__valor{font-family:var(--mono);font-size:13px;font-weight:500}
+  .pedido__status{font-family:var(--display);font-size:23px;font-weight:500;margin:5px 0 2px;line-height:1.2}
+  .pedido__meta{font-size:13px;color:var(--tinta-suave)}
+  .pedido__fatos{
+    display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:11px;
+    padding-top:11px;border-top:1px solid var(--linha)
+  }
+  .pedido__fato{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .pedido__fato dt{
+    font-size:10px;font-weight:600;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--tinta-suave)
+  }
+  .pedido__fato dd{margin:0;font-size:13px;color:var(--tinta)}
+  .pedido__miniaturas{display:flex;gap:5px;margin-top:12px}
+  .pedido__miniaturas img{
+    width:42px;height:42px;object-fit:cover;border-radius:6px;border:1px solid var(--linha);background:#fff
+  }
+
+  /* ---------- Detalhe ---------- */
+  .voltar{
+    display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;padding:0;
+    border:0;background:none;cursor:pointer;font-family:var(--corpo);
+    font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave)
+  }
+  .voltar:hover{color:var(--ouro)}
+
+  .destaque{border-left:4px solid var(--cor,var(--ouro))}
+  .destaque h2{font-family:var(--display);font-size:30px;font-weight:500;margin:3px 0 6px;line-height:1.15}
+  .destaque p{margin:0;color:var(--tinta-suave);font-size:14px}
+
+  .previsao{
+    margin-top:16px;padding-top:15px;border-top:1px solid var(--linha);
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap
+  }
+  .previsao strong{font-family:var(--display);font-size:21px;font-weight:600}
+
+  .rastreio{margin-top:16px;padding:16px;background:var(--ouro-claro);border-radius:var(--raio-p)}
+  .rastreio code{
+    display:block;font-family:var(--mono);font-size:14px;
+    letter-spacing:.06em;margin:3px 0 11px;word-break:break-all
+  }
+  .rastreio .botao{margin-top:4px}
+  .rastreio--vazio{background:transparent;border:1px dashed var(--linha)}
+  .rastreio__espera{margin:5px 0 0;font-size:14px;color:var(--tinta-suave)}
+  .rastreio__obs{
+    margin:12px 0 0;padding-top:11px;border-top:1px solid rgba(168,129,63,.22);
+    font-size:12.5px;line-height:1.45;color:var(--tinta-suave)
+  }
+  .rastreio--vazio .rastreio__obs{border-top-color:var(--linha)}
+
+  /* ---------- Linha do tempo ---------- */
+  .procissao{list-style:none;margin:0;padding:0}
+  .etapa{position:relative;padding:0 0 20px 30px}
+  .etapa:last-child{padding-bottom:0}
+  .etapa::before{content:'';position:absolute;left:5px;top:15px;bottom:-3px;width:1px;background:var(--linha)}
+  .etapa:last-child::before{display:none}
+  .etapa::after{
+    content:'';position:absolute;left:0;top:5px;width:11px;height:11px;
+    border-radius:50%;border:1px solid var(--linha);background:var(--papel)
+  }
+  .etapa--feita::before{background:var(--ouro)}
+  .etapa--feita::after{background:var(--ouro);border-color:var(--ouro)}
+  .etapa--atual::after{
+    background:var(--papel);border:3px solid var(--ouro);
+    box-shadow:0 0 0 3px rgba(168,129,63,.15)
+  }
+  .etapa span{font-size:14.5px;color:var(--tinta-suave)}
+  .etapa--feita span{color:var(--tinta)}
+  .etapa--atual span{color:var(--tinta);font-weight:600}
+
+  /* ---------- Itens e dados ---------- */
+  h3.secao{
+    font-family:var(--corpo);font-size:11px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--tinta-suave);margin:0 0 14px
+  }
+  .item{display:flex;gap:13px;padding:11px 0;border-top:1px solid var(--linha)}
+  .item:first-of-type{border-top:0;padding-top:0}
+  .item img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--linha);background:#fff;flex:0 0 auto}
+  .item__nome{font-size:14px;line-height:1.4;margin:0 0 3px}
+  .item__meta{font-size:12.5px;color:var(--tinta-suave);font-family:var(--mono)}
+
+  dl.dados{margin:0;font-size:14px}
+  dl.dados div{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-top:1px solid var(--linha)}
+  dl.dados div:first-child{border-top:0;padding-top:0}
+  dl.dados dt{color:var(--tinta-suave)}
+  dl.dados dd{margin:0;text-align:right}
+
+  /* ---------- Ajuda ---------- */
+  .opcoes{display:grid;gap:8px}
+  .opcao{
+    display:block;width:100%;text-align:left;padding:13px 15px;cursor:pointer;
+    background:var(--papel);border:1px solid var(--linha);border-radius:var(--raio-p);
+    font-family:var(--corpo);font-size:14.5px;color:var(--tinta)
+  }
+  .opcao:hover{border-color:var(--ouro)}
+  .opcao span{display:block;font-size:12.5px;color:var(--tinta-suave);margin-top:2px}
+  .opcao--marcada{border-color:var(--ouro);background:#fff;box-shadow:inset 3px 0 0 var(--ouro)}
+  .opcao--travada{position:relative;opacity:.55;cursor:not-allowed;background:transparent;
+    border-style:dashed}
+  .opcao--travada:hover{border-color:var(--linha)}
+  .cadeado{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    font-size:14px;margin:0}
+  .caixa{display:flex;gap:11px;align-items:flex-start}
+  .caixa input{width:auto;margin-top:3px;appearance:auto;flex:0 0 auto}
+  .caixa > span{color:var(--tinta);font-size:14px}
+
+  .trava-aviso{
+    margin:0 0 14px;padding:11px 14px;border-radius:var(--raio-p);
+    background:var(--ouro-claro);font-size:13px;line-height:1.5;color:var(--tinta-suave)
+  }
+
+  /* ---------- Fotos ---------- */
+  .bloqueio{text-align:center;border-top:4px solid var(--ouro)}
+  .bloqueio h2{font-family:var(--display);font-size:27px;font-weight:500;
+    margin:6px 0 0;line-height:1.2}
+  .bloqueio code{display:block;font-family:var(--mono);font-size:15px;
+    letter-spacing:.08em;margin:12px 0 16px;color:var(--ouro)}
+  .bloqueio p{margin:0 0 12px;font-size:14px;color:var(--tinta-suave);line-height:1.55}
+  .bloqueio__prazo{padding:11px 14px;border-radius:var(--raio-p);
+    background:var(--ouro-claro);color:var(--tinta) !important}
+
+  .fotos__legenda{margin:0 0 14px;font-size:13.5px;line-height:1.5;color:var(--tinta-suave)}
+  .fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:9px}
+  .fotos:not(:empty){margin-bottom:13px}
+  .foto{position:relative;aspect-ratio:1;border-radius:var(--raio-p);overflow:hidden;
+    border:1px solid var(--linha);background:#fff}
+  .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .foto__x{position:absolute;top:4px;right:4px;width:24px;height:24px;padding:0;
+    border:0;border-radius:50%;background:rgba(46,36,27,.82);color:#fff;
+    font-size:16px;line-height:1;cursor:pointer}
+  .fotos__botao{display:block;text-align:center;padding:13px;cursor:pointer;
+    border:1px dashed var(--linha);border-radius:var(--raio-p);
+    font-size:14px;font-weight:600;color:var(--botao)}
+  .fotos__botao:hover{border-color:var(--ouro)}
+  .fotos__botao input{display:none}
+  .fotos__contagem{margin:10px 0 0;font-size:13px;font-weight:600;color:var(--vermelho)}
+  .fotos__contagem--ok{color:var(--verde)}
+  .fotos__obs{margin:12px 0 0;padding-top:11px;border-top:1px solid var(--linha);
+    font-size:12px;line-height:1.5;color:var(--tinta-suave)}
+
+  /* ---------- Pop-up de confirmação ---------- */
+  .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:22px;
+    background:rgba(46,36,27,.38);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  .modal__caixa{position:relative;width:100%;max-width:440px;text-align:center;
+    background:var(--papel);border:1px solid var(--linha);border-radius:18px;
+    padding:38px 26px 26px;max-height:92vh;overflow:auto}
+  .modal__fechar{position:absolute;top:12px;right:14px;width:34px;height:34px;padding:0;
+    border:0;background:none;color:var(--tinta-suave);font-size:26px;line-height:1;cursor:pointer}
+  .modal__fechar:hover{color:var(--tinta)}
+  .modal__selo{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 16px;
+    border-radius:50%;background:var(--ouro-claro)}
+  .modal__selo svg{width:27px;height:27px;stroke:var(--ouro);fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .modal h2{font-family:var(--display);font-size:31px;font-weight:500;margin:0;line-height:1.15}
+  .modal code{display:block;font-family:var(--mono);font-size:15px;letter-spacing:.08em;
+    margin:10px 0 16px;color:var(--ouro)}
+  .modal__passo{margin:0 0 14px;font-size:14.5px;line-height:1.55}
+  .modal__horario{margin:0 0 22px;padding-top:14px;border-top:1px solid var(--linha);
+    font-size:13.5px;line-height:1.55;color:var(--tinta-suave)}
+  .modal__horario strong{color:var(--tinta)}
+  .modal .botao{text-decoration:none}
+
+  details.faq{border-top:1px solid var(--linha);padding:13px 0}
+  details.faq summary{
+    cursor:pointer;list-style:none;font-size:14.5px;font-weight:500;
+    display:flex;justify-content:space-between;gap:12px;align-items:center
+  }
+  details.faq summary::-webkit-details-marker{display:none}
+  details.faq summary::after{content:'+';font-family:var(--mono);color:var(--ouro);font-size:17px}
+  details.faq[open] summary::after{content:'–'}
+  details.faq p{margin:9px 0 0;font-size:14px;color:var(--tinta-suave)}
+
+  .protocolo{
+    text-align:center;padding:32px 22px;background:var(--papel);
+    border:1px solid var(--linha);border-top:4px solid var(--ouro);border-radius:var(--raio)
+  }
+  .protocolo code{display:block;font-family:var(--mono);font-size:22px;letter-spacing:.08em;margin:12px 0}
+  .protocolo p{margin:0 auto;max-width:40ch;color:var(--tinta-suave);font-size:14px}
+
+  .rodape{
+    margin-top:32px;padding-top:20px;border-top:1px solid var(--linha);
+    text-align:center;font-size:13px;color:var(--tinta-suave)
+  }
+  .rodape a{color:var(--ouro)}
+
+  .oculto{display:none !important}
+  .carregando{text-align:center;padding:46px 0;color:var(--tinta-suave);font-family:var(--display);font-size:21px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<!-- Cabeçalho da marca. Para trocar a logo, basta trocar o endereço do src abaixo. -->
+<header class="topbar">
+  <img src="/logo.png"
+       alt="Cientum">
+</header>
+
+<div class="faixa" aria-hidden="true">
+  <div class="faixa__trilho">
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+    <span>Suporte Cientum</span><span>Suporte Cientum</span>
+  </div>
+</div>
+
+<main class="envelope">
+
+  <!-- Aviso presente em todas as telas. Para mudar o texto, edite aqui. -->
+  <p class="aviso-fixo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8.5 8.5 0 01-12.2 7.6L3 21l1.4-5.4A8.5 8.5 0 1121 12z"/></svg>
+    <span><strong>Atendimento com protocolo.</strong> Todo o suporte da Cientum acontece por aqui — com protocolo e resposta registrada, sem ficar esperando na fila.</span>
+  </p>
+
+  <!-- ENTRADA -->
+  <section id="tela-entrada">
+    <header class="topo">
+      <h1>Olá! Como podemos ajudar?</h1>
+      <p>Acompanhe seus pedidos, consulte o rastreamento e resolva tudo em um só lugar.</p>
+    </header>
+
+    <div class="atalhos" id="atalhos"></div>
+
+    <div class="divisoria" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2l1.9 6.4L20 10l-6.1 1.6L12 18l-1.9-6.4L4 10l6.1-1.6z"/></svg>
+    </div>
+
+    <div id="erro-entrada" class="aviso oculto"></div>
+
+    <form id="form-entrada" class="cartao cartao--busca">
+      <h2 id="titulo-busca">Encontre rapidamente sua compra</h2>
+      <p id="legenda-busca">Os dois dados estão no e-mail de confirmação do pedido.</p>
+      <div class="campo">
+        <input id="email" name="email" type="email" autocomplete="email"
+               placeholder="E-mail usado na compra" required>
+      </div>
+      <div class="campo">
+        <input id="numero" name="numero" inputmode="numeric" autocomplete="off"
+               placeholder="Número do pedido" required>
+        <p class="dica">
+          <b>Exemplo: #1024 ou 1024</b><br>
+          Não sabe onde encontrar? Ele está no e-mail de confirmação do pedido
+          que enviamos para você.
+        </p>
+      </div>
+      <button class="botao" type="submit" id="botao-entrar">Localizar meu pedido</button>
+    </form>
+
+    <div class="selo">
+      <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-2.9 8.3-7 9.5C7.9 19.3 5 15.4 5 11V6z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>
+      <span>Seus dados estão protegidos.</span>
+    </div>
+  </section>
+
+  <!-- LISTA -->
+  <section id="tela-lista" class="oculto"></section>
+
+  <!-- DETALHE -->
+  <section id="tela-detalhe" class="oculto"></section>
+
+  <!-- SOLICITAÇÃO -->
+  <section id="tela-ajuda" class="oculto"></section>
+
+  <footer class="rodape" id="rodape">
+    <span style="font-family:var(--display);font-style:italic;font-size:17px">Somos todos feitos de estrelas.</span>
+  </footer>
+
+</main>
+
+<!-- Confirmação de solicitação enviada -->
+<div class="modal oculto" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+  <div class="modal__caixa">
+    <button class="modal__fechar" id="modal-fechar" aria-label="Fechar">&times;</button>
+    <span class="modal__selo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 7"/></svg>
+    </span>
+    <h2 id="modal-titulo">Solicitação enviada</h2>
+    <code id="modal-protocolo"></code>
+    <p class="modal__passo" id="modal-passo"></p>
+    <p class="modal__horario">
+      Ela já está na fila de análise da nossa equipe. As análises acontecem de
+      <strong>segunda a sexta, das 8h às 12h</strong>.
+      Fique de olho no seu e-mail: é por lá que a resposta chega.
+    </p>
+    <a class="botao" href="https://cientum.com.br">Retornar ao site</a>
+    <button class="botao botao--vazado" id="modal-pedidos">Ver meus pedidos</button>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   AJUSTE AQUI: perguntas frequentes mostradas antes de abrir chamado
+   ================================================================= */
+const FAQ = [
+  ['Quanto tempo leva para chegar?',
+   'A preparação leva de 1 a 7 dias úteis. Depois disso o prazo é o da transportadora, que aparece no link de rastreio do seu pedido.'],
+  ['O rastreio não atualiza há dias. É normal?',
+   'Sim, acontece. Os Correios costumam ficar sem movimentação por 2 a 4 dias entre uma cidade e outra. Se passar de 7 dias parado, entre em contato com a transportadora e abra uma solicitação com eles para verificarem o que houve com o seu pedido.'],
+  ['Posso trocar o tamanho?',
+   'Pode, em até 7 dias após a entrega, com a peça sem marcas de uso. O código de postagem é por nossa conta na primeira troca.'],
+  ['E se eu quiser devolver e receber o dinheiro de volta?',
+   'Você tem 7 dias corridos após a entrega para desistir da compra, conforme o Código de Defesa do Consumidor. O reembolso sai em até 10 dias depois que a peça chega aqui.'],
+  ['Como lavo a camiseta sem estragar a estampa?',
+   'Lave do avesso, com água fria e sabão neutro. Não use alvejante e não passe ferro direto sobre a estampa.']
+];
+
+/* Atalhos da tela inicial. `assunto` é o motivo que já vem marcado no formulário. */
+const ATALHOS = [
+  { id:'acompanhar', texto:'Acompanhar meu pedido', assunto:null,
+    titulo:'Encontre seu pedido',
+    legenda:'Os dois dados estão no e-mail de confirmação do pedido.',
+    listaTexto:'Toque no pedido para ver o status e o rastreio.',
+    icone:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>' },
+  { id:'troca', texto:'Solicitar troca ou devolução', assunto:'troca_tamanho',
+    titulo:'Primeiro, encontre seu pedido',
+    legenda:'Depois você escolhe as peças da troca ou devolução.',
+    listaTexto:'Escolha o pedido da troca ou devolução.',
+    icone:'<path d="M3 12a9 9 0 0115.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15.5 6.2L3 16"/><path d="M3 21v-5h5"/>' },
+  { id:'atrasado', texto:'Pedido atrasado', assunto:null,
+    titulo:'Primeiro, encontre seu pedido',
+    legenda:'Vamos te mostrar em que etapa ele está e o rastreio atualizado.',
+    listaTexto:'Toque no pedido para ver o rastreio e a previsão de entrega.',
+    icone:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>' },
+  { id:'ajuda', texto:'Preciso de ajuda', assunto:null,
+    titulo:'Primeiro, encontre seu pedido',
+    legenda:'Assim resolvemos na hora, sem ficar pedindo dados.',
+    listaTexto:'Escolha o pedido sobre o qual você quer falar.',
+    icone:'<path d="M21 12a8.5 8.5 0 01-12.2 7.6L3 21l1.4-5.4A8.5 8.5 0 1121 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>' }
+];
+
+/* ================================================================= */
+
+const $ = (s) => document.querySelector(s);
+const telas = ['tela-entrada','tela-lista','tela-detalhe','tela-ajuda'];
+const CORES = { roxo:'var(--roxo)', verde:'var(--verde)', ouro:'var(--ouro)', vermelho:'var(--vermelho)' };
+
+/* Quando a página roda embutida numa página da loja, ela precisa avisar
+   a altura para o iframe crescer, em vez de criar uma segunda rolagem. */
+const EMBUTIDO = (() => { try { return window.self !== window.top; } catch { return true; } })();
+
+if (EMBUTIDO) {
+  document.documentElement.classList.add('embutido');
+
+  const avisarAltura = () => {
+    const altura = Math.ceil(document.documentElement.scrollHeight);
+    parent.postMessage({ fonte:'cientum-central', altura }, '*');
+  };
+
+  window.addEventListener('load', avisarAltura);
+  if (window.ResizeObserver) new ResizeObserver(avisarAltura).observe(document.body);
+  setInterval(avisarAltura, 1000);
+}
+
+let estado = { token:null, nome:null, pedidos:[], pedidoAberto:null, limite:null, intencao:ATALHOS[0] };
+
+const escapar = (t) => String(t ?? '').replace(/[&<>"']/g, (c) =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const dinheiro = (v) => Number(v).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+const dataCurta = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+const dataLonga = (iso) =>
+  iso ? new Date(iso).toLocaleDateString('pt-BR', { day:'numeric', month:'long' }) : null;
+
+function mostrar(id){
+  telas.forEach((t) => $('#'+t).classList.toggle('oculto', t !== id));
+  if (EMBUTIDO) parent.postMessage({ fonte:'cientum-central', topo:true }, '*');
+  else window.scrollTo({ top:0, behavior:'instant' });
+}
+
+async function api(rota, opcoes = {}){
+  const res = await fetch(rota, {
+    ...opcoes,
+    headers:{
+      'Content-Type':'application/json',
+      ...(estado.token ? { Authorization:'Bearer ' + estado.token } : {}),
+      ...(opcoes.headers || {})
+    }
+  });
+  const dados = await res.json().catch(() => ({}));
+  if (!res.ok){
+    // O diagnóstico ajuda a loja a achar a causa sem precisar abrir os logs.
+    if (dados.diagnostico) console.error('[central]', rota, dados.diagnostico);
+    throw new Error(dados.erro || 'Algo não funcionou. Tente de novo.');
+  }
+  return dados;
+}
+
+/* ---------- Tela inicial ---------- */
+$('#atalhos').innerHTML = ATALHOS.map((a) =>
+  '<button type="button" class="atalho" data-id="'+a.id+'">'
+  + '<span class="atalho__icone"><svg viewBox="0 0 24 24">'+a.icone+'</svg></span>'
+  + '<span class="atalho__texto">'+escapar(a.texto)+'</span>'
+  + '<span class="atalho__seta" aria-hidden="true">&rsaquo;</span>'
+  + '</button>').join('');
+
+$('#atalhos').querySelectorAll('.atalho').forEach((b) => {
+  b.addEventListener('click', () => {
+    $('#atalhos').querySelectorAll('.atalho').forEach((o) => o.classList.remove('atalho--marcado'));
+    b.classList.add('atalho--marcado');
+    estado.intencao = ATALHOS.find((a) => a.id === b.dataset.id);
+    $('#titulo-busca').textContent = estado.intencao.titulo;
+    $('#legenda-busca').textContent = estado.intencao.legenda;
+    $('#form-entrada').scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(() => $('#email').focus({ preventScroll:true }), 320);
+  });
+});
+
+$('#form-entrada').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const botao = $('#botao-entrar');
+  const erro = $('#erro-entrada');
+  erro.classList.add('oculto');
+  botao.disabled = true;
+  botao.textContent = 'Procurando…';
+
+  try{
+    const r = await api('/api/session', {
+      method:'POST',
+      body: JSON.stringify({ numero: $('#numero').value, email: $('#email').value })
+    });
+    estado.token = r.token;
+    estado.nome = r.nome;
+    sessionStorage.setItem('cientum_token', r.token);
+    await carregarPedidos();
+  }catch(e){
+    erro.textContent = e.message;
+    erro.classList.remove('oculto');
+    erro.scrollIntoView({ behavior:'smooth', block:'center' });
+  }finally{
+    botao.disabled = false;
+    botao.textContent = 'Localizar meu pedido';
+  }
+});
+
+/* ---------- Lista ---------- */
+async function carregarPedidos(){
+  $('#tela-lista').innerHTML = '<p class="carregando">Abrindo seus pedidos…</p>';
+  mostrar('tela-lista');
+
+  try{
+    const r = await api('/api/pedidos');
+    estado.pedidos = r.pedidos;
+    estado.nome = r.nome || estado.nome;
+    estado.limite = r.limite || null;
+  }catch(e){
+    if (/expirada/i.test(e.message)) return sair();
+    $('#tela-lista').innerHTML = '<div class="aviso">'+escapar(e.message)+'</div>'
+      + '<button class="botao botao--vazado" id="recarregar">Tentar de novo</button>';
+    $('#recarregar').addEventListener('click', () => location.reload());
+    return;
+  }
+
+  const cabecalho =
+    '<h2 class="saudacao">' + (estado.nome ? 'Olá, ' + escapar(estado.nome) + '.' : 'Seus pedidos') + '</h2>'
+    + '<p>' + escapar(estado.intencao.listaTexto) + '</p>';
+
+  const cartoes = estado.pedidos.map((p, i) => {
+    const miniaturas = p.itens.filter((it) => it.imagem).slice(0,4)
+      .map((it) => '<img src="'+escapar(it.imagem)+'" alt="" loading="lazy">').join('');
+    const previsto = dataLonga(p.status.previsao?.ate);
+    const linha =
+      p.status.entregueEm ? 'Entregue em ' + dataCurta(p.status.entregueEm)
+      : previsto ? 'Previsão de entrega até ' + previsto
+      : null;
+
+    const frete = p.status.frete || {};
+    const prazoTexto = frete.prazo
+      ? frete.prazo + (frete.nome ? ' · ' + frete.nome : '')
+      : (frete.nome || null);
+
+    const fatos = '<dl class="pedido__fatos">'
+      + '<div class="pedido__fato"><dt>Compra</dt><dd>'+dataCurta(p.criadoEm)+'</dd></div>'
+      + (prazoTexto
+          ? '<div class="pedido__fato"><dt>Prazo contratado</dt><dd>'+escapar(prazoTexto)+'</dd></div>'
+          : '')
+      + '</dl>';
+
+    return '<button class="pedido" data-i="'+i+'" style="--cor:'+CORES[p.status.cor]+'">'
+      + '<div class="pedido__linha">'
+      +   '<span class="pedido__num">PEDIDO #'+escapar(p.numero)+'</span>'
+      +   '<span class="pedido__valor">'+dinheiro(p.total)+'</span>'
+      + '</div>'
+      + '<p class="pedido__status">'+escapar(p.status.titulo)+'</p>'
+      + (linha ? '<p class="pedido__meta">'+escapar(linha)+'</p>' : '')
+      + fatos
+      + (miniaturas ? '<div class="pedido__miniaturas">'+miniaturas+'</div>' : '')
+      + '</button>';
+  }).join('');
+
+  $('#tela-lista').innerHTML = cabecalho + cartoes
+    + '<p style="text-align:center;margin-top:20px"><button class="botao--texto" id="sair">Sair da conta</button></p>';
+
+  $('#tela-lista').querySelectorAll('.pedido').forEach((b) =>
+    b.addEventListener('click', () => abrirPedido(Number(b.dataset.i))));
+  $('#sair').addEventListener('click', sair);
+}
+
+/* ---------- Detalhe ---------- */
+function abrirPedido(i){
+  const p = estado.pedidos[i];
+  estado.pedidoAberto = p;
+  const cor = CORES[p.status.cor];
+
+  const procissao = p.status.etapas.length
+    ? '<div class="cartao"><h3 class="secao">Caminho do pedido</h3><ol class="procissao">'
+      + p.status.etapas.map((e) =>
+          '<li class="etapa'+(e.concluida?' etapa--feita':'')+(e.atual?' etapa--atual':'')+'">'
+          + '<span>'+escapar(e.label)+'</span></li>').join('')
+      + '</ol></div>'
+    : '';
+
+  const previsao = (p.status.previsao?.de || p.status.previsao?.ate)
+    ? '<div class="previsao"><span class="rotulo" style="margin:0">Previsão de entrega</span>'
+      + '<strong>' + (p.status.previsao.de && p.status.previsao.de !== p.status.previsao.ate
+          ? dataLonga(p.status.previsao.de) + ' a ' + dataLonga(p.status.previsao.ate)
+          : dataLonga(p.status.previsao.ate || p.status.previsao.de)) + '</strong></div>'
+    : '';
+
+  const r = p.status.rastreio || {};
+  const observacao = '<p class="rastreio__obs">O rastreio pode levar até 2 dias úteis para mostrar as '
+    + 'primeiras atualizações. Se você abrir e ainda não tiver nada, é normal — a transportadora só '
+    + 'registra o objeto depois da triagem.</p>';
+
+  const rastreio = r.url
+    ? '<div class="rastreio">'
+      + '<span class="rotulo">Rastreio'
+      + (r.transportadora ? ' · ' + escapar(r.transportadora) : '') + '</span>'
+      + (r.codigo ? '<code>'+escapar(r.codigo)+'</code>' : '')
+      + '<a class="botao" href="'+escapar(r.url)+'" target="_blank" rel="noopener">Acompanhar minha entrega</a>'
+      + observacao
+      + '</div>'
+    : '<div class="rastreio rastreio--vazio">'
+      + '<span class="rotulo">Rastreio</span>'
+      + (r.codigo ? '<code>'+escapar(r.codigo)+'</code>' : '')
+      + '<p class="rastreio__espera">Seu link de rastreio aparece aqui assim que o pedido for postado.</p>'
+      + observacao
+      + '</div>';
+
+  const eventos = (p.status.eventos || []).length
+    ? '<div class="cartao"><h3 class="secao">Movimentações</h3><ol class="procissao">'
+      + p.status.eventos.slice().reverse().map((e, idx) =>
+          '<li class="etapa'+(idx===0?' etapa--atual':' etapa--feita')+'"><span>'
+          + escapar(e.descricao || e.status)
+          + (e.local ? ' · ' + escapar(e.local) : '')
+          + '<br><span style="font-family:var(--mono);font-size:12px">'+dataCurta(e.quando)+'</span>'
+          + '</span></li>').join('')
+      + '</ol></div>'
+    : '';
+
+  const itens = '<div class="cartao"><h3 class="secao">'
+    + (p.itens.length === 1 ? '1 peça' : p.itens.length + ' peças')
+    + '</h3>' + p.itens.map((it) =>
+        '<div class="item">'
+        + (it.imagem ? '<img src="'+escapar(it.imagem)+'" alt="" loading="lazy">' : '')
+        + '<div><p class="item__nome">'+escapar(it.nome)+'</p>'
+        + '<p class="item__meta">'+(it.variacao?escapar(it.variacao)+' · ':'')
+        + it.quantidade+'× '+dinheiro(it.preco)+'</p></div></div>').join('')
+    + '</div>';
+
+  const e = p.entrega;
+  const endereco = [e.rua && e.rua + (e.numero ? ', ' + e.numero : ''), e.complemento, e.bairro,
+                    [e.cidade, e.estado].filter(Boolean).join(' — '), e.cep]
+                    .filter(Boolean).map(escapar).join('<br>');
+
+  const frete = p.status.frete || {};
+
+  const dados = '<div class="cartao"><h3 class="secao">Entrega e pagamento</h3><dl class="dados">'
+    + (endereco ? '<div><dt>Endereço</dt><dd>'+endereco+'</dd></div>' : '')
+    + (frete.nome ? '<div><dt>Frete</dt><dd>'+escapar(frete.nome)+'</dd></div>' : '')
+    + (frete.prazo ? '<div><dt>Prazo contratado</dt><dd>'+escapar(frete.prazo)+'</dd></div>' : '')
+    + '<div><dt>Pagamento</dt><dd>'+escapar(p.formaPagamento || '—')
+    + (p.parcelas > 1 ? ' · ' + p.parcelas + '×' : '') + '</dd></div>'
+    + '<div><dt>Total</dt><dd><strong>'+dinheiro(p.total)+'</strong></dd></div>'
+    + '<div><dt>Pedido feito em</dt><dd>'+dataCurta(p.criadoEm)+'</dd></div>'
+    + '</dl></div>';
+
+  const rotuloAjuda = { troca:'Solicitar troca ou devolução',
+                        atrasado:'Meu pedido está atrasado' }[estado.intencao.id]
+                      || 'Preciso de ajuda com este pedido';
+
+  $('#tela-detalhe').innerHTML =
+      '<button class="voltar" id="voltar-lista">&larr; Todos os pedidos</button>'
+    + '<div class="cartao destaque" style="--cor:'+cor+'">'
+    +   '<span class="pedido__num">PEDIDO #'+escapar(p.numero)+'</span>'
+    +   '<h2>'+escapar(p.status.titulo)+'</h2>'
+    +   '<p>'+escapar(p.status.detalhe)+'</p>'
+    +   previsao + rastreio
+    + '</div>'
+    + procissao + eventos + itens + dados
+    + '<button class="botao botao--vazado" id="abrir-ajuda">'+escapar(rotuloAjuda)+'</button>';
+
+  $('#voltar-lista').addEventListener('click', () => mostrar('tela-lista'));
+  $('#abrir-ajuda').addEventListener('click', () => abrirAjuda(estado.intencao.assunto));
+  mostrar('tela-detalhe');
+}
+
+/* ---------- Solicitação ---------- */
+/* Cada assunto define o que a tela exige. `exigeEnvio` trava a opção
+   enquanto o pedido não foi postado. */
+const ASSUNTOS = [
+  { id:'alterar_tamanho', titulo:'Alterar o tamanho antes do envio',
+    nota:'Só enquanto o pedido não foi postado',
+    exigeEnvio:false, pecas:true, tamanho:true, fotos:0 },
+  { id:'endereco', titulo:'Preciso corrigir o endereço',
+    nota:'Antes de o pedido ser enviado',
+    exigeEnvio:false, pecas:false, tamanho:false, fotos:0 },
+  { id:'troca_tamanho', titulo:'Quero trocar o tamanho',
+    nota:'Peça sem marcas de uso, em até 7 dias após a entrega',
+    exigeEnvio:true, pecas:true, tamanho:true, fotos:5, prazoDias:7,
+    legenda:'Envie 5 fotos que mostrem que a peça não foi usada: a etiqueta ainda presa, a estampa inteira, a gola, as costuras e a peça aberta sobre uma superfície lisa.' },
+  { id:'defeito', titulo:'A peça veio com defeito',
+    nota:'Costura, estampa ou tecido com problema',
+    exigeEnvio:true, pecas:true, tamanho:false, fotos:5,
+    legenda:'Envie 5 fotos do defeito: uma de perto mostrando o problema em detalhe, uma mais afastada mostrando onde ele fica na peça, e o restante de outros ângulos.' },
+  { id:'devolucao', titulo:'Quero devolver e receber o dinheiro',
+    nota:'Desistência em até 7 dias após a entrega',
+    exigeEnvio:true, pecas:true, tamanho:false, fotos:5, prazoDias:7,
+    legenda:'Envie 5 fotos que mostrem que a peça não foi usada: a etiqueta ainda presa, a estampa inteira, a gola, as costuras e a peça aberta sobre uma superfície lisa.',
+    declaracao:'Entendo que só receberei o reembolso após o pedido chegar de volta na Cientum.' },
+];
+
+const TOLERANCIA_DIAS = 3;
+const TAMANHOS = ['P','M','G','GG'];
+const MODELOS = ['Tradicional','Baby look / Feminina'];
+
+function abrirAjuda(assuntoInicial){
+  const p = estado.pedidoAberto;
+  const jaSaiu = p.status.etapaAtual >= 3;
+
+  // Já existe uma solicitação em andamento para este e-mail.
+  if (estado.limite){
+    const l = estado.limite;
+    $('#tela-ajuda').innerHTML =
+        '<button class="voltar" id="voltar-detalhe">&larr; Pedido #'+escapar(p.numero)+'</button>'
+      + '<div class="cartao bloqueio">'
+      +   '<span class="rotulo">Solicitação em andamento</span>'
+      +   '<h2>Você já tem um pedido de análise aberto.</h2>'
+      +   '<code>'+escapar(l.protocolo)+'</code>'
+      +   '<p>Nossa equipe está analisando esse caso. Para dar conta de todos com atenção, '
+      +     'aceitamos uma solicitação por cliente a cada 30 dias.</p>'
+      +   '<p class="bloqueio__prazo">Você poderá abrir outra em <strong>'
+      +     l.faltam + (l.faltam === 1 ? ' dia' : ' dias') + '</strong>.</p>'
+      +   '<p>A resposta da solicitação atual chega no seu e-mail.</p>'
+      + '</div>';
+    $('#voltar-detalhe').addEventListener('click', () => mostrar('tela-detalhe'));
+    mostrar('tela-ajuda');
+    return;
+  }
+
+  const diasEntrega = p.status.diasDesdeEntrega;
+
+  // Devolve o motivo da trava, ou null quando a opção está liberada.
+  function travaDe(a){
+    if (a.exigeEnvio && !jaSaiu) return 'Liberado depois que o pedido for enviado';
+    if (a.prazoDias && diasEntrega != null && diasEntrega > a.prazoDias + TOLERANCIA_DIAS)
+      return 'Prazo de ' + a.prazoDias + ' dias após a entrega encerrado';
+    return null;
+  }
+
+  let assunto = null;      // objeto do ASSUNTOS
+  let fotos = [];          // { dados, tipo, previa }
+
+  const perguntas = FAQ.map(([q,a]) =>
+    '<details class="faq"><summary>'+escapar(q)+'</summary><p>'+escapar(a)+'</p></details>').join('');
+
+  const opcoes = ASSUNTOS.map((a) => {
+    const trava = travaDe(a);
+    return '<button type="button" class="opcao'+(trava?' opcao--travada':'')+'" data-assunto="'+a.id+'">'
+      + escapar(a.titulo)
+      + '<span>' + escapar(trava || a.nota) + '</span>'
+      + (trava ? '<span class="cadeado" aria-hidden="true">&#128274;</span>' : '')
+      + '</button>';
+  }).join('');
+
+  const pecas = p.itens.map((it,i) =>
+    '<label class="opcao caixa">'
+    + '<input type="checkbox" class="peca" data-i="'+i+'" '
+    + 'value="'+escapar(it.nome + (it.variacao ? ' ('+it.variacao+')' : ''))+'">'
+    + '<span>'+escapar(it.nome)
+    + (it.variacao ? '<span>'+escapar(it.variacao)+'</span>' : '') + '</span></label>').join('');
+
+  const tamanhos = TAMANHOS.map((t) => '<option value="'+t+'">'+t+'</option>').join('');
+  const modelos = MODELOS.map((m) => '<option value="'+escapar(m)+'">'+escapar(m)+'</option>').join('');
+
+  $('#tela-ajuda').innerHTML =
+      '<button class="voltar" id="voltar-detalhe">&larr; Pedido #'+escapar(p.numero)+'</button>'
+    + '<div class="cartao"><h3 class="secao">Talvez isto já resolva</h3>'+perguntas+'</div>'
+    + '<div id="erro-ajuda" class="aviso oculto"></div>'
+    + '<form id="form-ajuda">'
+    +   '<div class="cartao"><h3 class="secao">O que aconteceu?</h3>'
+    +     (jaSaiu ? '' : '<p class="trava-aviso">Seu pedido ainda não foi enviado. '
+    +       'As opções de troca, defeito, devolução e extravio são liberadas só depois do envio.</p>')
+    +     '<div class="opcoes">'+opcoes+'</div></div>'
+
+    +   '<div class="cartao oculto" id="bloco-pecas"><h3 class="secao">Quais peças?</h3>'
+    +     '<div class="opcoes">'+pecas+'</div></div>'
+
+    +   '<div class="cartao oculto" id="bloco-tamanho">'
+    +     '<h3 class="secao">Qual peça você quer no lugar?</h3>'
+    +     '<label class="rotulo" for="modelo">Modelo</label>'
+    +     '<select id="modelo"><option value="">Escolha o modelo</option>'+modelos+'</select>'
+    +     '<label class="rotulo" for="tamanho" style="margin-top:15px">Tamanho</label>'
+    +     '<select id="tamanho"><option value="">Escolha o tamanho</option>'+tamanhos+'</select>'
+    +   '</div>'
+
+    +   '<div class="cartao oculto" id="bloco-fotos">'
+    +     '<h3 class="secao">Fotos</h3>'
+    +     '<p class="fotos__legenda" id="fotos-legenda"></p>'
+    +     '<div class="fotos" id="fotos-lista"></div>'
+    +     '<label class="fotos__botao"><input type="file" id="fotos-input" accept="image/*" multiple>'
+    +       '<span>Escolher fotos</span></label>'
+    +     '<p class="fotos__contagem" id="fotos-contagem"></p>'
+    +     '<p class="fotos__obs">A nitidez e a clareza das fotos afetam diretamente a análise da nossa '
+    +       'equipe. Fotos escuras, tremidas ou de longe podem atrasar ou impedir a aprovação. '
+    +       'Use luz do dia sempre que puder.</p>'
+    +   '</div>'
+
+    +   '<div class="cartao oculto" id="bloco-declaracao">'
+    +     '<label class="opcao caixa"><input type="checkbox" id="declaracao">'
+    +     '<span id="declaracao-texto"></span></label></div>'
+
+    +   '<div class="cartao oculto" id="bloco-relato">'
+    +     '<h3 class="secao">Conte o que houve</h3>'
+    +     '<textarea id="mensagem" placeholder="Quanto mais específico, mais rápido a gente resolve."></textarea>'
+    +     '<button class="botao" type="submit" id="enviar">Enviar solicitação</button>'
+    +   '</div>'
+    + '</form>';
+
+  /* ---------- Escolha do assunto ---------- */
+  function marcar(botao, comFoco){
+    const alvo = ASSUNTOS.find((a) => a.id === botao.dataset.assunto);
+    const trava = travaDe(alvo);
+    if (trava){
+      mostrarErro(alvo.exigeEnvio && !jaSaiu
+        ? 'Seu pedido ainda não foi enviado. Essa opção é liberada só depois do envio.'
+        : 'O prazo de ' + alvo.prazoDias + ' dias após a entrega já passou, '
+          + 'por isso essa opção não está mais disponível.');
+      return;
+    }
+    $('#tela-ajuda').querySelectorAll('.opcao[data-assunto]')
+      .forEach((o) => o.classList.remove('opcao--marcada'));
+    botao.classList.add('opcao--marcada');
+    assunto = alvo;
+    fotos = [];
+
+    $('#bloco-pecas').classList.toggle('oculto', !alvo.pecas);
+    $('#bloco-tamanho').classList.toggle('oculto', !alvo.tamanho);
+    $('#bloco-fotos').classList.toggle('oculto', !alvo.fotos);
+    $('#bloco-declaracao').classList.toggle('oculto', !alvo.declaracao);
+    $('#bloco-relato').classList.remove('oculto');
+
+    if (alvo.fotos){
+      $('#fotos-legenda').textContent = alvo.legenda || '';
+      $('#fotos-input').value = '';
+      desenharFotos();
+    }
+    if (alvo.tamanho){ $('#modelo').value = ''; $('#tamanho').value = ''; }
+    if (alvo.declaracao){
+      $('#declaracao').checked = false;
+      $('#declaracao-texto').textContent = alvo.declaracao;
+    }
+    esconderErro();
+    if (comFoco) $('#mensagem').focus();
+  }
+
+  $('#tela-ajuda').querySelectorAll('.opcao[data-assunto]').forEach((b) =>
+    b.addEventListener('click', () => marcar(b, true)));
+  $('#voltar-detalhe').addEventListener('click', () => mostrar('tela-detalhe'));
+
+  /* ---------- Fotos ---------- */
+  function desenharFotos(){
+    $('#fotos-lista').innerHTML = fotos.map((f, i) =>
+      '<div class="foto"><img src="'+f.previa+'" alt="">'
+      + '<button type="button" class="foto__x" data-i="'+i+'" aria-label="Remover foto">&times;</button>'
+      + '</div>').join('');
+    $('#fotos-lista').querySelectorAll('.foto__x').forEach((b) =>
+      b.addEventListener('click', () => { fotos.splice(Number(b.dataset.i), 1); desenharFotos(); }));
+
+    const faltam = Math.max(0, (assunto?.fotos || 0) - fotos.length);
+    $('#fotos-contagem').textContent = faltam
+      ? (faltam === 1 ? 'Falta 1 foto.' : 'Faltam ' + faltam + ' fotos.')
+      : fotos.length + (fotos.length === 1 ? ' foto anexada.' : ' fotos anexadas.');
+    $('#fotos-contagem').classList.toggle('fotos__contagem--ok', !faltam);
+  }
+
+  $('#fotos-input').addEventListener('change', async (ev) => {
+    const arquivos = [...ev.target.files].slice(0, 12 - fotos.length);
+    ev.target.value = '';
+    for (const arquivo of arquivos){
+      try{
+        fotos.push(await comprimir(arquivo));
+        desenharFotos();
+      }catch{
+        mostrarErro('Não conseguimos ler uma das imagens. Tente outra foto.');
+      }
+    }
+  });
+
+  /* ---------- Envio ---------- */
+  $('#form-ajuda').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const botao = $('#enviar');
+    esconderErro();
+
+    if (!assunto) return mostrarErro('Escolha o motivo da solicitação.');
+    if (assunto.tamanho && !$('#modelo').value)
+      return mostrarErro('Escolha o modelo da peça: tradicional ou baby look.');
+    if (assunto.tamanho && !$('#tamanho').value)
+      return mostrarErro('Escolha para qual tamanho você quer trocar.');
+    if (assunto.declaracao && !$('#declaracao').checked)
+      return mostrarErro('Marque a declaração para continuar.');
+    if (fotos.length < assunto.fotos)
+      return mostrarErro(assunto.fotos === 1
+        ? 'Anexe a foto pedida antes de enviar.'
+        : 'Anexe pelo menos ' + assunto.fotos + ' fotos antes de enviar.');
+    if ($('#mensagem').value.trim().length < 10)
+      return mostrarErro('Escreva pelo menos uma frase explicando o que aconteceu.');
+
+    botao.disabled = true;
+    const itens = [...$('#tela-ajuda').querySelectorAll('.peca:checked')].map((c) => c.value);
+
+    try{
+      const enderecos = [];
+      for (let i = 0; i < fotos.length; i++){
+        botao.textContent = 'Enviando foto ' + (i+1) + ' de ' + fotos.length + '…';
+        const r = await api('/api/foto', { method:'POST',
+          body: JSON.stringify({ dados: fotos[i].dados, tipo: fotos[i].tipo }) });
+        enderecos.push(r.url);
+      }
+
+      botao.textContent = 'Registrando…';
+      const r = await api('/api/solicitacao', { method:'POST', body: JSON.stringify({
+        pedidoId: p.id,
+        assunto: assunto.id,
+        itens,
+        mensagem: $('#mensagem').value,
+        fotos: enderecos,
+        tamanhoDesejado: assunto.tamanho ? $('#tamanho').value : '',
+        modeloDesejado: assunto.tamanho ? $('#modelo').value : '',
+        declaracao: assunto.declaracao ? $('#declaracao').checked : false,
+      })});
+
+      estado.limite = { protocolo: r.protocolo, faltam: 30 };
+      abrirConfirmacao(r);
+    }catch(e){
+      mostrarErro(e.message);
+    }finally{
+      botao.disabled = false;
+      botao.textContent = 'Enviar solicitação';
+    }
+  });
+
+  function mostrarErro(texto){
+    const erro = $('#erro-ajuda');
+    erro.textContent = texto;
+    erro.classList.remove('oculto');
+    erro.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  function esconderErro(){ $('#erro-ajuda').classList.add('oculto'); }
+
+  mostrar('tela-ajuda');
+
+  // Veio de um atalho da tela inicial: já deixa o motivo marcado.
+  if (assuntoInicial){
+    const alvo = $('#tela-ajuda').querySelector('.opcao[data-assunto="'+assuntoInicial+'"]');
+    if (alvo && !alvo.classList.contains('opcao--travada')) marcar(alvo, false);
+  }
+}
+
+/* Reduz a foto no próprio navegador: sobe rápido e cabe no limite do servidor. */
+function comprimir(arquivo, ladoMaximo = 1600, qualidade = 0.72){
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onerror = reject;
+    leitor.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const escala = Math.min(1, ladoMaximo / Math.max(img.width, img.height));
+        const tela = document.createElement('canvas');
+        tela.width = Math.round(img.width * escala);
+        tela.height = Math.round(img.height * escala);
+        tela.getContext('2d').drawImage(img, 0, 0, tela.width, tela.height);
+        const url = tela.toDataURL('image/jpeg', qualidade);
+        resolve({ previa: url, tipo: 'image/jpeg', dados: url.split(',')[1] });
+      };
+      img.src = leitor.result;
+    };
+    leitor.readAsDataURL(arquivo);
+  });
+}
+
+/* ---------- Confirmação ---------- */
+function abrirConfirmacao(r){
+  $('#modal-protocolo').textContent = r.protocolo;
+  $('#modal-passo').textContent = r.proximoPasso || '';
+  $('#modal').classList.remove('oculto');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharConfirmacao(){
+  $('#modal').classList.add('oculto');
+  document.body.style.overflow = '';
+  mostrar('tela-lista');
+}
+
+/* ---------- Sessão ---------- */
+$('#modal-fechar').addEventListener('click', fecharConfirmacao);
+$('#modal-pedidos').addEventListener('click', () => { fecharConfirmacao(); carregarPedidos(); });
+
+function sair(){
+  estado = { token:null, nome:null, pedidos:[], pedidoAberto:null, limite:null, intencao:ATALHOS[0] };
+  sessionStorage.removeItem('cientum_token');
+  $('#atalhos').querySelectorAll('.atalho').forEach((o) => o.classList.remove('atalho--marcado'));
+  $('#titulo-busca').textContent = 'Encontre rapidamente sua compra';
+  $('#legenda-busca').textContent = 'Os dois dados estão no e-mail de confirmação do pedido.';
+  $('#form-entrada').reset();
+  mostrar('tela-entrada');
+}
+
+const salvo = sessionStorage.getItem('cientum_token');
+if (salvo){ estado.token = salvo; carregarPedidos(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de solicitações — Cientum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme:#F3F1ED;--papel:#FFFFFF;--tinta:#1C1C1C;--tinta-suave:#66625C;
+    --linha:#E2DED7;--ouro:#A07A45;--ouro-claro:#EFEAE2;--botao:#111111;
+    --roxo:#454A78;--verde:#3E5C50;--vermelho:#7A2A26;
+    --display:'Cormorant Garamond',Georgia,serif;
+    --corpo:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--creme);color:var(--tinta);font-family:var(--corpo);
+       font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--ouro)}
+  :focus-visible{outline:2px solid var(--ouro);outline-offset:3px;border-radius:4px}
+
+  .envelope{max-width:860px;margin:0 auto;padding:28px 20px 70px}
+  .topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+        flex-wrap:wrap;margin-bottom:22px}
+  .topo h1{font-family:var(--display);font-size:32px;font-weight:500;margin:0}
+  .contagem{font-family:var(--mono);font-size:13px;color:var(--tinta-suave)}
+
+  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:14px;
+          padding:20px;margin-bottom:14px}
+  input,select{width:100%;padding:12px 14px;font-family:var(--corpo);font-size:16px;
+       color:var(--tinta);background:#fff;border:1px solid var(--linha);
+       border-radius:9px;appearance:none}
+  input:focus,select:focus{border-color:var(--ouro);outline:none}
+  .botao{display:inline-flex;align-items:center;justify-content:center;width:100%;
+    padding:13px 18px;margin-top:10px;border:1px solid var(--botao);border-radius:9px;
+    background:var(--botao);color:#FDFBF7;font-family:var(--corpo);font-size:14.5px;
+    font-weight:600;cursor:pointer}
+  .botao:disabled{opacity:.5;cursor:default}
+  .botao--pequeno{width:auto;margin:0;padding:8px 14px;font-size:13px;
+    background:transparent;color:var(--botao)}
+  .botao--pequeno:hover{background:var(--botao);color:#FDFBF7}
+  .aviso{padding:11px 14px;border-radius:9px;font-size:13.5px;background:#F5E5E2;
+    border:1px solid #E0C4BF;color:var(--vermelho);margin-bottom:13px}
+
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .filtro{padding:8px 15px;border:1px solid var(--linha);border-radius:999px;
+    background:var(--papel);font-family:var(--corpo);font-size:13.5px;
+    color:var(--tinta-suave);cursor:pointer}
+  .filtro--ativo{border-color:var(--botao);background:var(--botao);color:#FDFBF7;font-weight:600}
+  .busca{margin-bottom:16px}
+
+  .ficha{position:relative;background:var(--papel);border:1px solid var(--linha);
+    border-radius:14px;padding:18px 20px 18px 24px;margin-bottom:12px;overflow:hidden}
+  .ficha::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:var(--cor,var(--linha))}
+  .ficha--resolvida{opacity:.62}
+  .ficha__topo{display:flex;justify-content:space-between;align-items:baseline;
+    gap:14px;flex-wrap:wrap}
+  .ficha__protocolo{font-family:var(--mono);font-size:12px;color:var(--tinta-suave);
+    letter-spacing:.04em}
+  .ficha__quando{font-family:var(--mono);font-size:12px;color:var(--tinta-suave)}
+  .ficha__assunto{font-family:var(--display);font-size:24px;font-weight:500;
+    margin:6px 0 3px;line-height:1.2}
+  .ficha__pedido{font-size:13.5px;color:var(--tinta-suave);margin:0 0 12px}
+  .ficha__relato{background:var(--creme);border-radius:9px;padding:13px 15px;
+    margin:0 0 13px;font-size:14.5px;white-space:pre-wrap}
+  .ficha__pecas{margin:0 0 12px;font-size:13.5px;color:var(--tinta-suave)}
+  .galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+    gap:8px;margin:0 0 14px}
+  .galeria a{display:block;aspect-ratio:1;border-radius:9px;overflow:hidden;
+    border:1px solid var(--linha);background:#fff}
+  .galeria img{width:100%;height:100%;object-fit:cover;display:block}
+  .galeria a:hover{border-color:var(--ouro)}
+
+  dl.dados{margin:0 0 14px;font-size:13.5px;display:grid;
+    grid-template-columns:auto 1fr;gap:5px 14px}
+  dl.dados dt{color:var(--tinta-suave)}
+  dl.dados dd{margin:0;word-break:break-word}
+
+  .etiqueta{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;
+    font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .etiqueta--prazo{background:#E6EADF;color:var(--verde)}
+  .etiqueta--fora{background:#F5E5E2;color:var(--vermelho)}
+  .etiqueta--nota{background:var(--ouro-claro);color:var(--ouro)}
+
+  .acoes{display:flex;gap:9px;flex-wrap:wrap;align-items:center;
+    padding-top:13px;border-top:1px solid var(--linha)}
+
+  .vazio{text-align:center;padding:56px 20px;color:var(--tinta-suave);
+    font-family:var(--display);font-size:22px}
+  .oculto{display:none !important}
+</style>
+</head>
+<body>
+<main class="envelope">
+
+  <!-- ENTRADA -->
+  <section id="tela-entrada">
+    <div class="topo"><h1>Painel de solicitações</h1></div>
+    <div id="erro-entrada" class="aviso oculto"></div>
+    <form id="form-entrada" class="cartao">
+      <label for="senha" style="display:block;font-size:11px;font-weight:600;
+        letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-suave);
+        margin-bottom:7px">Senha da equipe</label>
+      <input id="senha" type="password" autocomplete="current-password" required>
+      <button class="botao" type="submit" id="botao-entrar">Entrar</button>
+    </form>
+  </section>
+
+  <!-- PAINEL -->
+  <section id="tela-painel" class="oculto">
+    <div class="topo">
+      <h1>Solicitações</h1>
+      <span class="contagem" id="contagem"></span>
+    </div>
+    <div id="erro-painel" class="aviso oculto"></div>
+    <div class="filtros" id="filtros"></div>
+    <div class="busca"><input id="busca" placeholder="Buscar por pedido, nome, e-mail ou protocolo"></div>
+    <div id="lista"></div>
+    <p style="text-align:center;margin-top:24px">
+      <button class="botao--pequeno" id="atualizar">Atualizar lista</button>
+      <button class="botao--pequeno" id="sair">Sair</button>
+    </p>
+  </section>
+
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const CORES = { alterar_tamanho:'#454A78', endereco:'#454A78', cancelar:'#7A2A26',
+  troca_tamanho:'#A07A45', defeito:'#7A2A26', devolucao:'#7A2A26',
+  nao_chegou:'#3E5C50', outro:'#66625C' };
+
+let token = sessionStorage.getItem('cientum_painel');
+let solicitacoes = [];
+let filtro = 'aberta';
+
+const escapar = (t) => String(t ?? '').replace(/[&<>"']/g,(c)=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const quando = (iso) => iso ? new Date(iso).toLocaleString('pt-BR',
+  { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+
+async function api(rota, opcoes = {}){
+  const res = await fetch(rota, { ...opcoes, headers:{
+    'Content-Type':'application/json',
+    ...(token ? { Authorization:'Bearer ' + token } : {}),
+    ...(opcoes.headers || {})
+  }});
+  const dados = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(dados.erro || 'Algo não funcionou.');
+  return dados;
+}
+
+/* ---------- Entrada ---------- */
+$('#form-entrada').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const botao = $('#botao-entrar'), erro = $('#erro-entrada');
+  erro.classList.add('oculto'); botao.disabled = true; botao.textContent = 'Entrando…';
+  try{
+    const r = await api('/api/painel', { method:'POST',
+      body: JSON.stringify({ senha: $('#senha').value }) });
+    token = r.token;
+    sessionStorage.setItem('cientum_painel', token);
+    await carregar();
+  }catch(e){
+    erro.textContent = e.message; erro.classList.remove('oculto');
+  }finally{
+    botao.disabled = false; botao.textContent = 'Entrar';
+  }
+});
+
+/* ---------- Carregar ---------- */
+async function carregar(){
+  $('#tela-entrada').classList.add('oculto');
+  $('#tela-painel').classList.remove('oculto');
+  $('#lista').innerHTML = '<p class="vazio">Carregando…</p>';
+  try{
+    const r = await api('/api/painel');
+    solicitacoes = r.solicitacoes || [];
+    $('#erro-painel').classList.add('oculto');
+  }catch(e){
+    if (/expirada|Sessão/i.test(e.message)) return sair();
+    $('#erro-painel').textContent = e.message;
+    $('#erro-painel').classList.remove('oculto');
+    solicitacoes = [];
+  }
+  desenhar();
+}
+
+/* ---------- Desenhar ---------- */
+function desenhar(){
+  const abertas = solicitacoes.filter((s) => s.status !== 'resolvida').length;
+
+  $('#filtros').innerHTML = [
+    ['aberta', 'Abertas (' + abertas + ')'],
+    ['resolvida', 'Resolvidas'],
+    ['todas', 'Todas'],
+  ].map(([v,t]) =>
+    '<button class="filtro'+(filtro===v?' filtro--ativo':'')+'" data-f="'+v+'">'+t+'</button>'
+  ).join('');
+  $('#filtros').querySelectorAll('.filtro').forEach((b) =>
+    b.addEventListener('click', () => { filtro = b.dataset.f; desenhar(); }));
+
+  const busca = $('#busca').value.trim().toLowerCase();
+  const visiveis = solicitacoes.filter((s) => {
+    if (filtro === 'aberta' && s.status === 'resolvida') return false;
+    if (filtro === 'resolvida' && s.status !== 'resolvida') return false;
+    if (!busca) return true;
+    return [s.protocolo, s.pedidoNumero, s.clienteNome, s.clienteEmail, s.clienteTelefone]
+      .join(' ').toLowerCase().includes(busca);
+  });
+
+  $('#contagem').textContent = visiveis.length + (visiveis.length === 1 ? ' solicitação' : ' solicitações');
+
+  if (!visiveis.length){
+    $('#lista').innerHTML = '<p class="vazio">'
+      + (filtro === 'aberta' ? 'Nenhuma solicitação aberta. Tudo em dia.' : 'Nada por aqui.')
+      + '</p>';
+    return;
+  }
+
+  $('#lista').innerHTML = visiveis.map((s) => {
+    const resolvida = s.status === 'resolvida';
+    const etiquetas = [
+      s.janelaDias != null
+        ? '<span class="etiqueta '+(s.dentroDoPrazo?'etiqueta--prazo':'etiqueta--fora')+'">'
+          + (s.dentroDoPrazo ? 'Dentro do prazo' : 'Fora do prazo') + '</span>'
+        : '',
+      s.naNota ? '<span class="etiqueta etiqueta--nota">Também na observação do pedido</span>' : '',
+    ].join(' ');
+
+    return '<article class="ficha'+(resolvida?' ficha--resolvida':'')+'" '
+      + 'style="--cor:'+(CORES[s.assunto]||'var(--linha)')+'">'
+      + '<div class="ficha__topo">'
+      +   '<span class="ficha__protocolo">'+escapar(s.protocolo)+'</span>'
+      +   '<span class="ficha__quando">'+quando(s.abertoEm)+'</span>'
+      + '</div>'
+      + '<h2 class="ficha__assunto">'+escapar(s.assuntoRotulo)+'</h2>'
+      + '<p class="ficha__pedido">Pedido <strong>#'+escapar(s.pedidoNumero)+'</strong> · '
+      +   escapar(s.pedidoStatus || '—') + '</p>'
+      + (etiquetas.trim() ? '<p style="margin:0 0 12px">'+etiquetas+'</p>' : '')
+      + '<p class="ficha__relato">'+escapar(s.mensagem)+'</p>'
+      + ((s.itens||[]).length
+          ? '<p class="ficha__pecas">Peças: '+escapar(s.itens.join(' · '))+'</p>' : '')
+      + (s.tamanhoDesejado
+          ? '<p class="ficha__pecas">Quer no lugar: <strong>'
+            + escapar(s.modeloDesejado || 'modelo não informado')
+            + ' · tamanho ' + escapar(s.tamanhoDesejado)+'</strong></p>' : '')
+      + ((s.fotos||[]).length
+          ? '<div class="galeria">' + s.fotos.map((u,i) =>
+              '<a href="'+escapar(u)+'" target="_blank" rel="noopener" title="Abrir foto '+(i+1)+'">'
+              + '<img src="'+escapar(u)+'" alt="Foto '+(i+1)+'" loading="lazy"></a>').join('')
+            + '</div>'
+          : '')
+      + '<dl class="dados">'
+      +   '<dt>Cliente</dt><dd>'+escapar(s.clienteNome || '—')+'</dd>'
+      +   '<dt>E-mail</dt><dd>'+escapar(s.clienteEmail)+'</dd>'
+      +   (s.clienteTelefone ? '<dt>Telefone</dt><dd>'+escapar(s.clienteTelefone)+'</dd>' : '')
+      +   (s.entrega ? '<dt>Entrega</dt><dd>'+escapar(s.entrega)+'</dd>' : '')
+      +   (s.diasDesdeEntrega != null
+            ? '<dt>Entregue há</dt><dd>'+s.diasDesdeEntrega+' dias</dd>' : '')
+      +   (resolvida ? '<dt>Resolvida em</dt><dd>'+quando(s.resolvidoEm)+'</dd>' : '')
+      + '</dl>'
+      + '<div class="acoes">'
+      +   '<a class="botao--pequeno" style="text-decoration:none;border:1px solid var(--linha);'
+      +     'border-radius:9px;color:var(--botao)" href="'+escapar(s.pedidoLink)+'" '
+      +     'target="_blank" rel="noopener">Abrir pedido</a>'
+      +   '<a class="botao--pequeno" style="text-decoration:none;border:1px solid var(--linha);'
+      +     'border-radius:9px;color:var(--botao)" href="mailto:'+escapar(s.clienteEmail)
+      +     '?subject='+encodeURIComponent(s.protocolo+' · '+s.assuntoRotulo+' · pedido #'+s.pedidoNumero)
+      +     '">Responder por e-mail</a>'
+      +   '<button class="botao--pequeno" style="border:1px solid var(--linha);border-radius:9px" '
+      +     'data-protocolo="'+escapar(s.protocolo)+'" data-novo="'+(resolvida?'aberta':'resolvida')+'">'
+      +     (resolvida ? 'Reabrir' : 'Marcar como resolvida') + '</button>'
+      + '</div>'
+      + '</article>';
+  }).join('');
+
+  $('#lista').querySelectorAll('button[data-protocolo]').forEach((b) =>
+    b.addEventListener('click', () => mudarStatus(b, b.dataset.protocolo, b.dataset.novo)));
+}
+
+async function mudarStatus(botao, protocolo, status){
+  botao.disabled = true;
+  const antes = botao.textContent;
+  botao.textContent = 'Salvando…';
+  try{
+    const r = await api('/api/painel', { method:'PATCH',
+      body: JSON.stringify({ protocolo, status }) });
+    const i = solicitacoes.findIndex((s) => s.protocolo === protocolo);
+    if (i >= 0) solicitacoes[i] = r.solicitacao;
+    desenhar();
+  }catch(e){
+    botao.disabled = false; botao.textContent = antes;
+    $('#erro-painel').textContent = e.message;
+    $('#erro-painel').classList.remove('oculto');
+  }
+}
+
+$('#busca').addEventListener('input', desenhar);
+$('#atualizar').addEventListener('click', carregar);
+$('#sair').addEventListener('click', sair);
+
+function sair(){
+  token = null; solicitacoes = [];
+  sessionStorage.removeItem('cientum_painel');
+  $('#tela-painel').classList.add('oculto');
+  $('#tela-entrada').classList.remove('oculto');
+  $('#senha').value = '';
+}
+
+if (token) carregar();
+</script>
+</body>
+</html>
